@@ -22,9 +22,8 @@ class WebhookController extends Controller
             {
                 foreach($decodePayload as $payloadItem)
                 {
-                    // app('websockets.server')->broadcastToChannel('webhook', [
-                    //     'payload' => $payloadItem,
-                    // ]);
+                    
+                    // broadcast(new WebhookEvent($payloadItem))->to('webhook');
                     Log::info(json_encode($payloadItem));
                 }
             }else if (is_object($decodePayload))
