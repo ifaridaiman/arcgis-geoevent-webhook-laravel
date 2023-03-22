@@ -5,17 +5,44 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use DataTables;
 use Illuminate\Http\Response;
-
+use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
+use Illuminate\Support\Facades\Log;
 
 class WebhookController extends Controller
 {
-    public function handleWebhook(Request $request)
+    public function handle(Request $request)
     {
-        $payload = $request->json()->all();
+        $payload = $request->getContent();
 
-        // return response()->json($payload, Response::HTTP_OK);
-        // return response()->json(['message' => 'Data updated successfully']);
-
-        return DataTables::of($payload)->make(true);
+        if($payload !== null)
+        {
+            $decodePayload = json_decode($payload);
+            
+            if(is_array($decodePayload))
+            {
+                foreach($decodePayload as $payloadItem)
+                {
+                    // app('websockets.server')->broadcastToChannel('webhook', [
+                    //     'payload' => $payloadItem,
+                    // ]);
+                    Log::info(json_encode($payloadItem));
+                }
+            }else if (is_object($decodePayload))
+            {
+                // app('websockets.server')->broadcastToChannel('webhook', [
+                //     'payload' => $decodePayload,
+                // ]);
+                Log::notice(json_encode($decodePayload));
+            }else
+            {
+                Log::warning('Invalid payload format');
+                return response('Invalid payload format', 400);
+            }
+        }else
+        {
+            Log::warning('Payload is null');
+            return response('Payload is null', 400);
+        }
+        return response('OK',200);
     }
 }

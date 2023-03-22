@@ -18,5 +18,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/webhook', [WebhookController::class, 'handleWebhook'])->name('webhook.handle');
+
+Route::post('/webhook', [WebhookController::class, 'handle'])->name('webhook.handle');
 
